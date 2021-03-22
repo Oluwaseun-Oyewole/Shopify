@@ -1,0 +1,11 @@
+{
+  "workbench.colorTheme": "Ayu Mirage Plus Green",
+  "workbench.colorCustomizations": {
+  
+  },
+  "python.pythonPath": "venv\\Scripts\\python.exe",
+  "vsicons.associations.files": [
+  "venv\\Scripts\\python.exe"
+  
+  ]
+}
