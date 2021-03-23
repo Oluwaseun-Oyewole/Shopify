@@ -32,11 +32,20 @@ class Item(models.Model):
   def get_absolute_url(self):
     return reverse('product', kwargs={'slug': self.slug})
   
+  def get_add_to_cart(self):
+    return reverse("add_to_cart", kwargs={"slug":self.slug})
+  
+  def get_remove_from_cart(self):
+    return reverse("remove_from_cart", kwargs={"slug": self.slug})
+  
 class OrderItem(models.Model):
+  user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
   item = models.ForeignKey(Item, on_delete=models.CASCADE, blank=True, null=True)
+  quantity = models.IntegerField(default=1)
+  ordered=models.BooleanField(default=False, blank=True, null=True)
   
   def __str__(self):
-    return self.title
+    return f"{self.quantity} of {self.item.title}"
 
 class Order(models.Model):
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
