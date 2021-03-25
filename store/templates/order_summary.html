@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<h2>Order Summary</h2>
+<table class="table caption-top">
+  <thead>
+    <tr>
+      <th scope="col">s/n</th>
+      <th scope="col">Item Title</th>
+      <th scope="col">Price</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Total Item Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order_item in object.items.all %}
+    <tr>
+      <th scope="row">{{ forloop.counter }}</th>
+      <td>{{ order_item.item.title }}</td>
+      <td>{{order_item.item.price }}</td>
+      <td>{{order_item.quantity }}</td>
+      <td>
+
+      {% if order_item.item.discounted_price %}
+
+        $ {{ order_item.get_total_item_discount }}
+       <span class="badge badge-primary"> Saving ${{order_item.get_amount_saved }}</span>
+      {% else %}
+
+      $ {{ order_item.get_total_item_price }}
+
+      {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+   <tr>
+     <td colspan="4"><b>Order Total</b></td>
+      <td><b>${{ object.get_total }}</b></td>
+    </tr>
+
+
+    <tr>
+      <td colspan="5">
+       <a class="btn btn-warning float-right ml-2" href="{% url 'checkout' %}">Proceed to checkout</a>
+       <a class="btn btn-primary float-right" href="/">Continue shopping</a>
+     </tr>
+     </td>
+  </tbody>
+</table>
+
+{% endblock content %}

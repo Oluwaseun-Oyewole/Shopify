@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     # end session for django all auth
     # app name
+    'crispy_forms',
     'store',
     
 ]
@@ -88,7 +89,7 @@ WSGI_APPLICATION = 'shop.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'webshop',
+        'NAME': 'shopify',
         'USER': 'postgres',
         'PORT': 5432,
         'HOST': 'localhost',
@@ -135,7 +136,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -146,3 +147,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 SITE_ID = 1
+
+
+LOGIN_REDIRECT_URL = "/"
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
