@@ -12,5 +12,6 @@ urlpatterns = [
   # path("order_summary/", views.OrderSummaryView.as_view(), name="order_summary"),
   path("order/", views.get_order_summary, name="order"),
   path("remove_single_item_from_cart/<slug>/",  views.remove_single_item_from_cart, name="remove_single_item_from_cart"),
+  path("payment/<payment_option>/", views.PaymentView.as_view(), name="payment")
 
 ]
