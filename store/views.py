@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import CheckOutForm
+from .forms import CheckOutForm, CouponForm
 import stripe
 from django.conf import settings
 
@@ -133,9 +133,15 @@ def remove_single_item_from_cart(request, slug):
 class CheckoutView(LoginRequiredMixin, View):
   
   def get(self, *args,**kwargs):
-    form = CheckOutForm()
-    order = Order.objects.get(user=self.request.user, ordered=False)
-    return render(self.request, 'checkout-page.html', {"form": form, 'order':order})
+    try:
+      form = CheckOutForm()
+      order = Order.objects.get(user=self.request.user, ordered=False)
+      couponform=CouponForm()
+      return render(self.request, 'checkout-page.html', {"form": form, 'order':order, 'couponform':couponform, 'DISPLAY_COUPON_FORM': True})
+    except ObjectDoesNotExist:
+      messages.warning(self.request, 'You d not have any active order')
+      return redirect("checkout")
+  
   
   def post(self, *args, **kwargs):
     form = CheckOutForm(self.request.POST or None)
@@ -162,8 +168,7 @@ class CheckoutView(LoginRequiredMixin, View):
         billing_address.save()
         order.billing_address = billing_address
         order.save()
-        # TODO: add a redrect to the selected payment option
-        
+        # TODO: add a redrect to the selected payment option     
         if payment_option == "S":
           return redirect("payment", payment_option="stripe")
         elif payment_option == "P":
@@ -183,12 +188,16 @@ class CheckoutView(LoginRequiredMixin, View):
 class PaymentView(View):
   def get(self, *args, **kwargs):
     order= Order.objects.get(user=self.request.user, ordered=False)
-    return render(self.request, 'payment.html', {'order':order})
+    if  order.billing_address:
+      return render(self.request, 'payment.html', {'order':order, 'DISPLAY_COUPON_FORM': False })
+    else:
+      messages.warning(self.request, 'You have not selected a billing address')
+      return redirect("checkout")
   
   def post(self, *args, **kwargs):
     order= Order.objects.get(user=self.request.user, ordered=False)
     amount = int(order.get_total() * 100)
-    token = self.request.POST.get("StripeToken")
+    token = self.request.POST.get("stripeToken")
     
     try:
       # make use of stripe Library
@@ -200,6 +209,12 @@ class PaymentView(View):
       payment.user  = self.request.user
       payment.amount = order.get_total() 
       payment.save()
+      
+      
+      order_items = order.items.all()
+      order_items.update(ordered=True)
+      for item in order_items:
+        item.save()
       
       # assigning the payment to the order
       order.ordered = True
@@ -250,5 +265,49 @@ class PaymentView(View):
       messages.error(self.request, "Serious error occurred. We have been notified ")
       pass
       
+
+def get_coupon(request, code):
+  try:
+    coupon = Coupon.objects.get(code=code)
+    return coupon
+  except ObjectDoesNotExist:
+    messages.warning(request, "This coupon does not exist")
+    return redirect("checkout"
+                    )
     
-    
+
+class AddCouponView(View):
+  def get(self, *args, **kwargs):
+      form = CouponForm(self.request.POST or None)
+      if  form.is_valid():
+        try: 
+          code = form.cleaned_data.get("code")   
+          order = Order.objects.get(user=self.request.user, ordered=False)
+          order.coupon = get_coupon(self.request, code)
+          order.save()
+          messages.success(self.request, "Succesfuly Added Coupon")
+          return redirect("checkout")
+        
+        except ObjectDoesNotExist:
+          messages.info(request, "You do not have an active order")
+          return redirect("checkout")
+
+
+# def add_coupon(request):
+#   if request.method =='POST':
+#       form = CouponForm(request.POST or None)
+#       if  form.is_valid():
+#         try: 
+#           code = form.cleaned_data.get("code")   
+#           order = Order.objects.get(user=request.user, ordered=False)
+#           order.coupon = get_coupon(request, code)
+#           order.save()
+#           messages.success(request, "Succesfuly Added Coupon")
+#           return redirect("checkout")
+        
+#         except ObjectDoesNotExist:
+#           messages.info(request, "You do not have an active order")
+#           return redirect("checkout")
+#   # TODO raise error 
+#   return None
+

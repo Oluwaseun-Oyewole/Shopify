@@ -3,7 +3,7 @@
 {% block content %}
 
   <!--Carousel Wrapper-->
-  <div id="carousel-example-1z" class="carousel slide carousel-fade pt-4" data-ride="carousel">
+  <div id="carousel-example-1z" class="carousel slide carousel-fade pt-4" data-ride="carousel" style="overflow:hidden">
 
     <!--Slides-->
     <div class="carousel-inner" role="listbox">
@@ -98,8 +98,9 @@
 
               <!--Card image-->
               <div class="view overlay">
-                <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12.jpg" class="card-img-top"
-                  alt="">
+                <!-- <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12.jpg" class="card-img-top"
+                  alt=""> -->
+                  <img src="{{ item.imageUrl }}" class="card-img-top" alt="image">
                 <a href="{{item.get_absolute_url }}">
                   <div class="mask rgba-white-slight"></div>
                 </a>
