@@ -104,6 +104,7 @@ class Coupon(models.Model):
   
 class Order(models.Model):
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+  ref_code = models.CharField(max_length=20)
   items =models.ManyToManyField(OrderItem) 
   start_date = models.DateTimeField(auto_now_add=True)
   ordered_date = models.DateTimeField()
@@ -111,6 +112,25 @@ class Order(models.Model):
   billing_address = models.ForeignKey(BillingAddress, on_delete=models.SET_NULL, blank=True, null=True)
   payment= models.ForeignKey(Payment, on_delete=models.SET_NULL, blank=True, null=True)
   coupon= models.ForeignKey(Coupon, on_delete=models.SET_NULL, blank=True, null=True)
+  # new statues
+  being_delivered=models.BooleanField(default=False, blank=True, null=True)
+  refund_requested=models.BooleanField(default=False, blank=True, null=True)
+  refund_granted=models.BooleanField(default=False, blank=True, null=True)
+  received = models.BooleanField(default=False, blank=True, null=True)
+    
+  
+  """[order statutes]
+  
+  1. Item added to cart
+  2. Adding a billing address
+    (Failed checkout using like stripe webhooks )
+  3. Payment
+    (Preprocessing, Processing, Packaging etc)
+  4. Being delivered
+  5. Received
+  6. Refunds
+    
+  """
   
   def __str__(self):
         return self.user.username
@@ -119,7 +139,8 @@ class Order(models.Model):
     total = 0
     for order_item in self.items.all():
       total += order_item.get_final_price()
-    total -= self.coupon.amount
+    if self.coupon:
+      total -= self.coupon.amount
     return total
   
   def get_total_quantity(self):
@@ -128,3 +149,12 @@ class Order(models.Model):
       total += item.quantity
     return total
   
+
+class Refund(models.Model):
+  order = models.ForeignKey(Order, on_delete=models.CASCADE)
+  reason = models.TextField()
+  accepted = models.BooleanField(default=False)
+  email = models.EmailField()
+  
+  def __str__(self):
+    return f'{self.pk}' ' ' + self.order.user.username
