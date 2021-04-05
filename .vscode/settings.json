@@ -1,5 +1,4 @@
 {
-  "workbench.colorTheme": "Ayu Mirage Plus Green",
   "workbench.colorCustomizations": {
   
   },
@@ -7,5 +6,6 @@
   "vsicons.associations.files": [
   "venv\\Scripts\\python.exe"
   
-  ]
+  ],
+  "workbench.colorTheme": "Ayu Mirage Plus Green"
 }

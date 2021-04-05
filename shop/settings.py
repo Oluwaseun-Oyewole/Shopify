@@ -90,7 +90,7 @@ WSGI_APPLICATION = 'shop.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'shopify',
+        'NAME': 'ecom',
         'USER': 'postgres',
         'PORT': 5432,
         'HOST': 'localhost',
