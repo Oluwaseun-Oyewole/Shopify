@@ -15,6 +15,15 @@ urlpatterns = [
   path("payment/<payment_option>/", views.PaymentView.as_view(), name="payment"),
   # path("add_coupon/", views.add_coupon, name="add_coupon")
   path("add_coupon/", views.AddCouponView.as_view(), name="add_coupon"),
-  path("request_refund/", views.RequestRefundView.as_view(), name="request_refund")
+  path("request_refund/", views.RequestRefundView.as_view(), name="request_refund"),
+  path("paypal/",views.PaypalView.as_view(), name="paypal" ),
+  path('process/', views.home, name='process_payment'),
+  
+  # for shirts
+  
+  path("shirts/", views.shirts, name="shirts"),
+  path("sportwear/", views.sportwear, name="sportwear"),
+  path("outwear/", views.outwear, name="outwear")
+  
 
 ]

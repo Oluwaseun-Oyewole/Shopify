@@ -12,7 +12,8 @@ import stripe
 from django.conf import settings
 import random
 import string
-
+from paypal.standard.forms import PayPalPaymentsForm
+from decimal import Decimal
 
 def create_ref_code():
   return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
@@ -29,7 +30,19 @@ class HomeView(ListView):
 class ItemDetailView(DetailView):
   model = Item
   template_name="product-page.html"
+  
 
+def shirts(request):
+  items = Item.objects.filter(category = 'S' )
+  return render(request, 'shirt_page.html', {'items':items})
+
+def sportwear(request):
+  items = Item.objects.filter(category = 'SW' )
+  return render(request, 'sportwear_page.html', {'items':items})
+
+def outwear(request):
+  items = Item.objects.filter(category="OW")
+  return render(request, 'outwear.html', {"items": items})
 
 # class OrderSummaryView(LoginRequiredMixin, View):
 #   def get(self, *args,**kwargs):
@@ -58,8 +71,20 @@ def get_order_summary(request):
 @login_required
 def add_to_cart(request, slug):
   item = get_object_or_404(Item , slug=slug)
-  order_item, created = OrderItem.objects.get_or_create(item=item, user=request.user, ordered=False)
+  product = Item.objects.all()
+  for item in product:
+    if item.category == "S":
+      print(item, 'is', item.category)
+    elif item.category == 'OW':
+      print(item, 'is', item.category)
+    elif item.category == 'SW':
+      print(item, 'is', item.category)
+    else:
+      print("No item with the category exist ")
+  print(product)
   
+  
+  order_item, created = OrderItem.objects.get_or_create(item=item, user=request.user, ordered=False)
   order_qs = Order.objects.filter(user=request.user, ordered=False)
   
   if order_qs.exists():
@@ -134,7 +159,6 @@ def remove_single_item_from_cart(request, slug):
         messages.info(request, "You do not have an active order")
         return redirect("product", slug=slug)
 
-
 # for empty strings
 def is_valid_form(values):
   valid =True
@@ -150,19 +174,26 @@ class CheckoutView(LoginRequiredMixin, View):
       form = CheckOutForm()
       order = Order.objects.get(user=self.request.user, ordered=False)
       couponform=CouponForm()
-      return render(self.request, 'checkout-page.html', {"form": form, 'order':order, 'couponform':couponform, 'DISPLAY_COUPON_FORM': True})
+      context = {
+                'form': form,
+                'couponform': CouponForm(),
+                'order': order,
+                'DISPLAY_COUPON_FORM': True
+            }
     
       shipping_address_qs = Address.objects.filter(user=self.request.user,  address_type="S", default = True)
       
-      if shipping_address_qs.exist():
+      if shipping_address_qs.exists():
         context.update({'default_shipping_address':shipping_address_qs[0]})
         
-      biliing_address_qs = Address.objects.filter(user=self.request.user,  address_type="S", default = True)
+      billing_address_qs = Address.objects.filter(user=self.request.user,  address_type="B", default = True)
       
-      if billing_address_qs.exist():
-        context.update({'default_billing_address':billing_address_qs[0]})   
+      if billing_address_qs.exists():
+        context.update({'default_billing_address':billing_address_qs[0]}) 
+      
+      return render(self.request, 'checkout-page.html', context)
+      
     except ObjectDoesNotExist:
-      
       messages.warning(self.request, 'You d not have any active order')
       return redirect("checkout")
   
@@ -173,13 +204,13 @@ class CheckoutView(LoginRequiredMixin, View):
       if form.is_valid():
         # print(form.cleaned_data)
         # print("This is a valid form")
-    
-    
+        
         # to check if we are using the default shipping address
+        
         use_default_shipping = form.cleaned_data.get("use_default_shipping")
         if use_default_shipping:
           print ("Using the dafault shipping address")
-          address_qs == Address.objects.filter(user=self.request.user, default=True, addres_type="S")
+          address_qs = Address.objects.filter(user=self.request.user, default=True, address_type="S")
           if address_qs.exists():
             shipping_address =  address_qs[0]
             order.shipping_address = shipping_address
@@ -187,7 +218,7 @@ class CheckoutView(LoginRequiredMixin, View):
             
           else:
             messages.info(self.request, 'No default shipping address available')
-            return redirect("cheeckout")
+            return redirect("checkout")
         else:
           print("User entering a new shipping address")
           shipping_address1 = form.cleaned_data.get('shipping_address')
@@ -219,63 +250,63 @@ class CheckoutView(LoginRequiredMixin, View):
             messages.info(self.request, 'Please fill in the required  shipping  address fields')
             return redirect("checkout")
         
-      #   use_default_billing = form.cleaned_data.get("use_default_billing")
-      #   same_billing_address =form.cleaned_data.get("same_billing_address")
+        use_default_billing = form.cleaned_data.get("use_default_billing")
+        same_billing_address =form.cleaned_data.get("same_billing_address")
         
-      #   if same_billing_address:
-      #     billing_address = shipping_address
-      #     # clone the billing address
-      #     billing_address.pk = None
-      #     # end of clone 
-      #     billing_address.save()
-      #     billing_address.address_type="B"
-      #     billing_address.save()
+        if same_billing_address:
+          billing_address = shipping_address
+          # clone the billing address
+          billing_address.pk = None
+          # end of clone 
+          billing_address.save()
+          billing_address.address_type="B"
+          billing_address.save()
           
-      #   elif use_default_billing:
-      #     print ("Using the dafault billing address")
-      #     address_qs == Address.objects.filter(user=self.request.user, default=True, addres_type="B")
-      #     if address_qs.exists():
-      #       billing_address =  address_qs[0]
-      #       order.billing_address = billing_address
-      #       order.save()
-      #     else:
-      #       messages.info(self.request, 'No default billing address available')
-      #       return redirect("cheeckout")
-      #   else:
-      #     print("User entering a new billing address")
-      #     billing_address1 = form.cleaned_data.get('billing_address')
-      #     billing_address2 = form.cleaned_data.get('billing_address2')
-      #     billing_country = form.cleaned_data.get('billing_country')
-      #     shipping_zip = form.cleaned_data.get('billing_zip')
+        elif use_default_billing:
+          print ("Using the dafault billing address")
+          address_qs = Address.objects.filter(user=self.request.user, default=True, address_type="B")
+          if address_qs.exists():
+            billing_address =  address_qs[0]
+            order.billing_address = billing_address
+            order.save()
+          else:
+            messages.info(self.request, 'No default billing address available')
+            return redirect("checkout")
+        else:
+          print("User entering a new billing address")
+          billing_address1 = form.cleaned_data.get('billing_address')
+          billing_address2 = form.cleaned_data.get('billing_address2')
+          billing_country = form.cleaned_data.get('billing_country')
+          shipping_zip = form.cleaned_data.get('billing_zip')
           
-      #     if is_valid_form([billing_address1, billing_address2, billing_country, shipping_zip]):
-      #     # payment_option = form.cleaned_data.get('payment_option')
-      #       billing_address = Address(
-      #         user=self.request.user,
-      #         apartment_address = billing_address2,
-      #         street_address =  billing_address1,
-      #         zip_code = shipping_zip,
-      #         country = billing_country,
-      #         address_type="S" 
-      #       )
-      #       billing_address.save()
-      #       order.billing_address = billing_address
-      #       order.save()
+          if is_valid_form([billing_address1, billing_address2, billing_country, shipping_zip]):
+          # payment_option = form.cleaned_data.get('payment_option')
+            billing_address = Address(
+              user=self.request.user,
+              apartment_address = billing_address2,
+              street_address =  billing_address1,
+              zip_code = shipping_zip,
+              country = billing_country,
+              address_type="S" 
+            )
+            billing_address.save()
+            order.billing_address = billing_address
+            order.save()
         
-      #       set_default_billing = form.cleaned_data.get("set_default_billing")
+            set_default_billing = form.cleaned_data.get("set_default_billing")
         
-      #       if set_default_billing:
-      #         billing_address.default = True
-      #         billing_address.save()
+            if set_default_billing:
+              billing_address.default = True
+              billing_address.save()
           
-      #     else:
-      #       messages.info(self.request, 'Please fill in the required  shipping  address fields')     
+          else:
+            messages.info(self.request, 'Please fill in the required  shipping  address fields')     
         payment_option = form.cleaned_data.get("payment_option")
       #   # TODO: add a redrect to the selected payment option     
         if payment_option == "S":
           return redirect("payment", payment_option="stripe")
         elif payment_option == "P":
-          return redirect("payment", payment_option="paypal")
+          return redirect("paypal")
         else:
           messages.warning(self.request, "Invalid payment option selected")
           return redirect("checkout")
@@ -283,8 +314,84 @@ class CheckoutView(LoginRequiredMixin, View):
       # messages.warning(self.request, 'Failed checkout')
       # return redirect("checkout")
     except ObjectDoesNotExist:
-      messages.error(request, 'You do not have any active order')
+      messages.error(self.request, 'You do not have any active order')
     return redirect("order")
+
+
+class PaypalView(LoginRequiredMixin, View):
+  
+  def get(self, *args,**kwargs):
+    try:
+      form = CheckOutForm()
+      order = Order.objects.get(user=self.request.user, ordered=False)
+      couponform=CouponForm()
+      context = {
+                'form': form,
+                'couponform': CouponForm(),
+                'order': order,
+                'DISPLAY_COUPON_FORM': True
+            }      
+      return render(self.request, 'paypal.html', context)
+      
+    except ObjectDoesNotExist:
+      messages.warning(self.request, 'You d not have any active order')
+      return redirect("checkout")
+  
+  def post(self, *args, **kwargs):
+    order= Order.objects.get(user=self.request.user, ordered=False)
+    amount = int(order.get_total())
+    
+    
+    try:
+            
+    # create payment 
+      payment = Payment()
+      payment.user  = self.request.user
+      payment.amount = order.get_total() 
+      payment.save()
+      
+      # for saving the order_item after payment is  made
+      order_items = order.items.all()
+      order_items.update(ordered=True)
+      for item in order_items:
+        item.save()
+      
+      # assigning the payment to the order
+      order.ordered = True
+      order.payment = payment
+      order.ref_code = create_ref_code()
+      order.save()
+      
+      messages.success(self.request, "Your order was successful")
+      return redirect('/')
+    except ObjectDoesNotExist:
+      return redirect("/")
+
+def process_payment(request):
+    order_id = request.session.get('order_id')
+    order = get_object_or_404(Order, id=order_id)
+    host = request.get_host()
+
+    paypal_dict = {
+        'business': settings.PAYPAL_RECEIVER_EMAIL,
+        'amount': '%.2f' % order.total_cost().quantize(
+            Decimal('.01')),
+        'item_name': 'Order {}'.format(order.id),
+        'invoice': str(order.id),
+        'currency_code': 'USD',
+        'notify_url': 'http://{}{}'.format(host,reverse('paypal-ipn')),
+        'return_url': 'http://{}{}'.format(host,reverse('payment_done')),
+        'cancel_return': 'http://{}{}'.format(host,reverse('payment_cancelled')),
+    }
+    form = PayPalPaymentsForm(initial=paypal_dict)
+    return render(request, 'payment_paypal.html', {'order': order, 'form': form})
+
+def home(request):
+  form = PayPalPaymentsForm()
+  if form.is_valid():
+    form.save()
+    return redirect("https://www.sandbox.paypal.com/cgi-bin/webscr")
+  return render(request, 'payment_paypal.html', {'form': form})
 
 
 class PaymentView(View):

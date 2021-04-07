@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'store',
     'django_countries',
+    'paypal.standard.ipn',
     
 ]
 
@@ -83,7 +84,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'shop.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -97,7 +97,6 @@ DATABASES = {
         'PASSWORD': '09067745762',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -131,10 +130,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
-
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
@@ -155,3 +150,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 STRIPE_PUBLIC_KEY =' pk_test_51IZdTYLpEeEVReByTTvA8gx1MDqfkR8Jp1wNKD7xHMBuJEOrmd0dGroUhpQ0pyfJKw4RrfXn9YzLbeEQZmb0Pb9V00FXypqDcE'
 STRIPE_SECRET_KEY = 'sk_test_51IZdTYLpEeEVReByiXB9MLbmEiDsbv2jlO6zhigYv66aHKcZPxxaU8GiSbERFkf4EqeO8ryMnTruWrIA31jfg4si00RDVB1hUz'
+
+PAYPAL_RECEIVER_EMAIL = 'findseunoyewole@gmail.com'
+
+PAYPAL_TEST = True

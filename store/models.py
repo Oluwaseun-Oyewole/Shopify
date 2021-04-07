@@ -34,6 +34,11 @@ class Item(models.Model):
   description = models.TextField() 
   image = models.ImageField(blank=True, null=True)
   
+  
+  def get_item_filtered(self):
+    return self.category.choices == "S"
+    
+    
   @property
   def imageUrl(self):
       try:
@@ -54,6 +59,7 @@ class Item(models.Model):
   def get_remove_from_cart(self):
     return reverse("remove_from_cart", kwargs={"slug": self.slug})
   
+
 class OrderItem(models.Model):
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
   item = models.ForeignKey(Item, on_delete=models.CASCADE, blank=True, null=True)
@@ -114,7 +120,7 @@ class Coupon(models.Model):
   
 class Order(models.Model):
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
-  ref_code = models.CharField(max_length=20)
+  ref_code = models.CharField(max_length=20, blank=True, null=True)
   items =models.ManyToManyField(OrderItem) 
   start_date = models.DateTimeField(auto_now_add=True)
   ordered_date = models.DateTimeField()
@@ -169,3 +175,4 @@ class Refund(models.Model):
   
   def __str__(self):
     return f'{self.pk}' ' ' + self.order.user.username
+  
