@@ -5,7 +5,7 @@
     <div class="container">
 
     <div class="table-responsive text-nowrap">
-    <h2 class="mt-4">Order Summary</h2>
+    <h3 class="mt-4">Order Summary</h3>
     <table class="table">
         <thead>
         <tr>
@@ -14,6 +14,7 @@
             <th scope="col">Price</th>
             <th scope="col">Quantity</th>
             <th scope="col">Total Item Price</th>
+            <th scope="col">Image</th>
         </tr>
         </thead>
         <tbody>
@@ -28,15 +29,16 @@
                 <a href="{% url 'add_to_cart' order_item.item.slug %}"><i class="fas fa-plus ml-2"></i></a>
             </td>
             <td>
-            {% if order_item.item.discount_price %}
-                ${{ order_item.get_total_discount_item_price }}
-                <span class="badge badge-primary">Saving ${{ order_item.get_amount_saved }}</span>
+            {% if order_item.item.discounted_price %}
+                ${{ order_item.get_total_item_discount }}
+                <span class="badge badge-dark">Saving ${{ order_item.get_amount_saved }}</span>
             {% else %}
                 ${{ order_item.get_total_item_price }}
             {% endif %}
             <a style='color: red;' href="{% url 'remove_from_cart' order_item.item.slug %}">
                 <i class="fas fa-trash float-right"></i>
             </a>
+            <td><img src="{{order_item.item.imageUrl }}" style="width: 40px;"></td>
             </td>
         </tr>
         {% empty %}
@@ -65,7 +67,7 @@
             <td><b>${{ object.get_total }}</b></td>
         </tr>
         <tr>
-            <td colspan="5">
+            <td colspan="6">
             <a class='btn btn-warning float-right ml-2' href='/checkout/'>Proceed to checkout</a>
             <a class='btn btn-primary float-right' href='/'>Continue shopping</a>
             </td>

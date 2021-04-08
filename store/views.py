@@ -71,19 +71,6 @@ def get_order_summary(request):
 @login_required
 def add_to_cart(request, slug):
   item = get_object_or_404(Item , slug=slug)
-  product = Item.objects.all()
-  for item in product:
-    if item.category == "S":
-      print(item, 'is', item.category)
-    elif item.category == 'OW':
-      print(item, 'is', item.category)
-    elif item.category == 'SW':
-      print(item, 'is', item.category)
-    else:
-      print("No item with the category exist ")
-  print(product)
-  
-  
   order_item, created = OrderItem.objects.get_or_create(item=item, user=request.user, ordered=False)
   order_qs = Order.objects.filter(user=request.user, ordered=False)
   
@@ -186,11 +173,12 @@ class CheckoutView(LoginRequiredMixin, View):
       if shipping_address_qs.exists():
         context.update({'default_shipping_address':shipping_address_qs[0]})
         
+        
       billing_address_qs = Address.objects.filter(user=self.request.user,  address_type="B", default = True)
       
       if billing_address_qs.exists():
-        context.update({'default_billing_address':billing_address_qs[0]}) 
-      
+        context.update({'default_billing_address':billing_address_qs[0]})
+  
       return render(self.request, 'checkout-page.html', context)
       
     except ObjectDoesNotExist:
@@ -287,7 +275,7 @@ class CheckoutView(LoginRequiredMixin, View):
               street_address =  billing_address1,
               zip_code = shipping_zip,
               country = billing_country,
-              address_type="S" 
+              address_type="B" 
             )
             billing_address.save()
             order.billing_address = billing_address
@@ -366,25 +354,6 @@ class PaypalView(LoginRequiredMixin, View):
       return redirect('/')
     except ObjectDoesNotExist:
       return redirect("/")
-
-def process_payment(request):
-    order_id = request.session.get('order_id')
-    order = get_object_or_404(Order, id=order_id)
-    host = request.get_host()
-
-    paypal_dict = {
-        'business': settings.PAYPAL_RECEIVER_EMAIL,
-        'amount': '%.2f' % order.total_cost().quantize(
-            Decimal('.01')),
-        'item_name': 'Order {}'.format(order.id),
-        'invoice': str(order.id),
-        'currency_code': 'USD',
-        'notify_url': 'http://{}{}'.format(host,reverse('paypal-ipn')),
-        'return_url': 'http://{}{}'.format(host,reverse('payment_done')),
-        'cancel_return': 'http://{}{}'.format(host,reverse('payment_cancelled')),
-    }
-    form = PayPalPaymentsForm(initial=paypal_dict)
-    return render(request, 'payment_paypal.html', {'order': order, 'form': form})
 
 def home(request):
   form = PayPalPaymentsForm()
