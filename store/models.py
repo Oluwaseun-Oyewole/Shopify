@@ -3,6 +3,7 @@ from django.conf import settings
 from django.shortcuts import reverse
 from django_countries.fields import CountryField
 from PIL import Image
+import random
 
 # Create your models here.
 
@@ -24,6 +25,11 @@ ADDRESS_CHOICES = (
   ("S", "Shipping")
 )
 
+ITEM_CHOICES = (
+  ('N', 'NEW'),
+  ('B', 'BESTSELLER'),
+  ('P', '')
+)
 class Item(models.Model):
   title = models.CharField(max_length=100,  null=True)
   price = models.FloatField()
@@ -33,6 +39,8 @@ class Item(models.Model):
   slug = models.SlugField()
   description = models.TextField() 
   image = models.ImageField(blank=True, null=True)
+  item_choice = models.CharField(choices=ITEM_CHOICES, blank=True, null=True, max_length=1)
+  
   
   
   def get_item_filtered(self):
@@ -46,6 +54,7 @@ class Item(models.Model):
       except:
           url = ''
       return url
+  
   
   def __str__(self):
     return self.title

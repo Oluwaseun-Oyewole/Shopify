@@ -128,12 +128,17 @@
           </ul>
           <!-- Links -->
 
-          <form class="form-inline" id="form">
+          <!-- <form class="form-inline" id="form">
             <div class="md-form my-0">
               <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" id="filter">
               <button class="btn btn-info btn-sm">search</button>
             </div>
-          </form>
+          </form> -->
+          
+
+          <div class="md-form my-0">
+            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" id="filter">
+            </div>
         </div>
         <!-- Collapsible content -->
 
@@ -151,7 +156,6 @@
 
             <!--Card-->
             <div class="card">
-
               <!--Card image-->
               <div class="view overlay">
                   <img src="{{ item.imageUrl }}" class="card-img-top" alt="image">
@@ -169,7 +173,7 @@
                 <h5>
                   <strong>
                     <a href="{{item.get_absolute_url }}" style="font-size:20px; text-transform:capitalize;" class="dark-grey-text" id="list">{{item.title}}
-                      <span class="badge badge-pill {{item.get_label_display }}-color">NEW</span>
+                      <span class="badge badge-pill {{item.get_label_display }}-color">{{item.get_item_choice_display }}</span>
                     </a>
                   </strong>
                 </h5>
@@ -243,43 +247,5 @@
   {% endblock content %}
   {% block extra_scripts %}
     <script>
-
-
-      let form = document.getElementById('form')
-      console.log(form)
-
-      if(form){
-        form.style.display="block"
-        console.log("show")
-      }
-      else{
-        form.style.display=""
-      }
-
-      form.addEventListener("submit", event)
-
-      function event(e){
-        e.preventDefault()
-        console.log("event submit triggered")
-
-        let search = document.getElementById("filter")
-        search.addEventListener('keyup', filterItems)
-
-        function filterItems(e){
-          let text = e.target.value.toLowerCase()
-          console.log(text)
-
-          let items = document.getElementById("list").firstChild.textContent
-          if (items.indexOf(text) != -1){
-            items.style.display="block"
-          }
-          else{
-            items.style.display="none"
-          }
-        }
-        
-      }
-
-
     </script>
 {% endblock extra_scripts %}

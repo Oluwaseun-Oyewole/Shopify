@@ -12,7 +12,6 @@ import stripe
 from django.conf import settings
 import random
 import string
-from paypal.standard.forms import PayPalPaymentsForm
 from decimal import Decimal
 
 def create_ref_code():

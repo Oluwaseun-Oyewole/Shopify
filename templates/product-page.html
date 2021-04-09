@@ -23,6 +23,7 @@
             <div class="mb-3">
               <a href="">
                 <span class="badge purple mr-1">{{object.get_category_display}}</span>
+                <b><span class="badge badge-pill {{object.get_label_display }}-color">{{object.get_item_choice_display }}</span></b>
               </a>
             </div>
 
@@ -106,8 +107,9 @@
         <!--Grid column-->
         <div class="col-lg-4 col-md-6 mb-4">
           <a href="{{object.get_absolute_url }}">
-            <img src="{{object.imageUrl}}" class="img-fluid" alt="" style="width:200px !important">
+            <img src="{{ object.imageUrl}}" class="img-fluid" alt="" style="width:200px !important">
           </a>
+          
 
         </div>
         <!--Grid column-->
