@@ -133,7 +133,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-# STATIC_ROOT = os.path.join(BASE_DIR,"staticfiles")
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -149,10 +149,6 @@ SITE_ID = 1
 
 LOGIN_REDIRECT_URL = "/"
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
-
-STRIPE_PUBLIC_KEY =' pk_test_51IZdTYLpEeEVReByTTvA8gx1MDqfkR8Jp1wNKD7xHMBuJEOrmd0dGroUhpQ0pyfJKw4RrfXn9YzLbeEQZmb0Pb9V00FXypqDcE'
-STRIPE_SECRET_KEY = 'sk_test_51IZdTYLpEeEVReByiXB9MLbmEiDsbv2jlO6zhigYv66aHKcZPxxaU8GiSbERFkf4EqeO8ryMnTruWrIA31jfg4si00RDVB1hUz'
-
 
 STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
