@@ -20,7 +20,8 @@ urlpatterns = [
   # for shirts
   path("shirts/", views.shirts, name="shirts"),
   path("sportwear/", views.sportwear, name="sportwear"),
-  path("outwear/", views.outwear, name="outwear")
+  path("outwear/", views.outwear, name="outwear"),
+  path("search/", views.get_search_item, name="search")
   
 
 ]

@@ -128,17 +128,16 @@
           </ul>
           <!-- Links -->
 
-          <!-- <form class="form-inline" id="form">
+          <form class="form-inline" id="form" method='GET' action="{% url 'search' %}" name="myform">
             <div class="md-form my-0">
-              <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" id="filter">
-              <button class="btn btn-info btn-sm">search</button>
+              <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" name="search">
+              <button class="btn btn-danger btn-sm">search</button>
             </div>
-          </form> -->
-          
+          </form>
 
-          <div class="md-form my-0">
+          <!-- <div class="md-form my-0">
             <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" id="filter">
-            </div>
+            </div> -->
         </div>
         <!-- Collapsible content -->
 

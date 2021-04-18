@@ -23,7 +23,7 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 class HomeView(ListView):
   model = Item
-  paginate_by = 5
+  paginate_by = 8
   template_name = "home-page.html"
 
 class ItemDetailView(DetailView):
@@ -84,14 +84,12 @@ def add_to_cart(request, slug):
       else:
         messages.success(request, "This item was added to your cart")
         order.items.add(order_item)
-        return redirect("order")
-          
+        return redirect("order")         
   else:
     ordered_date= timezone.now()
     order =Order.objects.create(user=request.user, ordered_date=ordered_date)
     order.items.add(order_item)  
-    return redirect("order")
-  
+    return redirect("order")  
   
 @login_required
 def remove_from_cart(request, slug):
@@ -112,7 +110,6 @@ def remove_from_cart(request, slug):
   else:
     messages.warning(request, "You do not have an active order")
     return redirect("order")
-
 
 @login_required
 def remove_single_item_from_cart(request, slug):
@@ -144,6 +141,23 @@ def remove_single_item_from_cart(request, slug):
     else:
         messages.info(request, "You do not have an active order")
         return redirect("product", slug=slug)
+
+
+def get_search_item(request):  
+  if  request.method == 'GET':
+    search_item = request.GET.get('search')
+    items = Item.objects.filter(title=search_item)
+    try:
+      if items.exists():
+        items = Item.objects.filter(title=search_item)
+        return render(request,"search.html",{"items":items})  
+      else:
+        messages.warning(request, 'No such  Item')
+        return redirect("/")
+    except ObjectDoesNotExist:
+      print("nothing dey here")
+  return redirect("/")
+  
 
 # for empty strings
 def is_valid_form(values):

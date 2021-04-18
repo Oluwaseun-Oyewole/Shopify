@@ -6,7 +6,7 @@ def make_refund_accepted(modelAdmin, request, queryset):
   queryset.update(refund_requested=False, refund_granted=True)
 make_refund_accepted.short_description = 'Update orders  to refund granted'
 
-def being_delivered_update(modelAdmin, request, queryset):
+def being_delivered_update(modelAdmin, request, queryset): 
     queryset.update(being_delivered = True)
 being_delivered_update.short_description = 'being delivered'
   

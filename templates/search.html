@@ -1,58 +1,18 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-  
+
+  {% if items %}
+  {% for item in items %} 
+      
   <body>
 
   <main>
     <div class="container">
-
-      <!--Navbar-->
-      <nav class="navbar navbar-expand-lg navbar-dark mdb-color lighten-3 mt-3 mb-5" style="background:rgba(0, 0, 0, 0.8) !important; color:white;">
-
-        <!-- Navbar brand -->
-        <span class="navbar-brand">Categories:</span>
-
-        <!-- Collapse button -->
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
-          aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <!-- Collapsible content -->
-        <div class="collapse navbar-collapse" id="basicExampleNav">
-
-          <!-- Links -->
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="{% url 'home' %}">All
-                <span class="sr-only">(current)</span>
-              </a>
-            </li>
-            <!-- <li class="nav-item">
-              <a class="nav-link" href="">Shirts</a>
-            </li> -->
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'sportwear' %}">Sport wears</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Outwears</a>
-            </li>
-
-          </ul>
-          <!-- Links -->
-
-        <form class="form-inline" id="form" method='GET' action="{% url 'search' %}" name="myform">
-            <div class="md-form my-0">
-              <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" name="search">
-              <button class="btn btn-danger btn-sm">search</button>
-            </div>
-          </form>
-        </div>
-        <!-- Collapsible content -->
-
-      </nav>
-      <!--/.Navbar-->
+      <br>
+      <h2 style="text-align:center; text-transform:capitalize; font-weight:bold">{{ item.title }}</h2>
+      <br>
+      <!-- navbar here -->
 
       <!--Section: Products v.3-->
       <section class="text-center mb-4">
@@ -154,5 +114,7 @@
   </main>
   <!--Main layout-->
 
-  {% endblock content %}
-  
+  {% endfor %}
+  {% endif %}
+
+{% endblock content %}

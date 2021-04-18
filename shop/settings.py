@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'store',
     'django_countries',
     'paypal.standard.ipn',
+    'storages',
     
 ]
 
@@ -94,7 +95,7 @@ DATABASES = {
         'USER': 'postgres',
         'PORT': 5432,
         'HOST': 'localhost',
-        'PASSWORD': '09067745762',
+        'PASSWORD': os.environ.get('EMAIL_PASSWORD')
     }
 }
 
@@ -132,6 +133,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+# STATIC_ROOT = os.path.join(BASE_DIR,"staticfiles")
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -151,6 +153,28 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 STRIPE_PUBLIC_KEY =' pk_test_51IZdTYLpEeEVReByTTvA8gx1MDqfkR8Jp1wNKD7xHMBuJEOrmd0dGroUhpQ0pyfJKw4RrfXn9YzLbeEQZmb0Pb9V00FXypqDcE'
 STRIPE_SECRET_KEY = 'sk_test_51IZdTYLpEeEVReByiXB9MLbmEiDsbv2jlO6zhigYv66aHKcZPxxaU8GiSbERFkf4EqeO8ryMnTruWrIA31jfg4si00RDVB1hUz'
 
+
+STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+
+
 PAYPAL_RECEIVER_EMAIL = 'findseunoyewole@gmail.com'
 
 PAYPAL_TEST = True
+
+
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+
+
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+
+
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+
+
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
